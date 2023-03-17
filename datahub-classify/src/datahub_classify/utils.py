@@ -1,15 +1,14 @@
 import logging
 import os
 import re
-from typing import Any, Dict, List, Optional, Set
+from typing import List, Optional, Set
 
 import nltk
 import numpy as np
 from numpy.linalg import norm
 from thefuzz import fuzz
 
-from datahub_classify.constants import PREDICTION_FACTORS_AND_WEIGHTS, VALUES
-from datahub_classify.helper_classes import ColumnMetadata, TextEmbeddings
+from datahub_classify.helper_classes import TextEmbeddings
 
 logger = logging.getLogger(__name__)
 GLOVE_URL = "https://nlp.stanford.edu/data/glove.6B.zip"
@@ -31,86 +30,6 @@ def load_stopwords() -> Set[str]:
 
         stop_words = set(stopwords.words("english"))
     return stop_words
-
-
-def match_regex(text_to_match: str, regex_list: List[str]) -> float:
-    """Match regex for Name and Description"""
-    original_text = text_to_match.lower()
-    cleaned_text = "".join(e for e in original_text if e.isalpha())
-    match_score: float = 0
-    for pattern in regex_list:
-        try:
-            pattern = pattern.lower()
-            cleaned_pattern = "".join(e for e in pattern if e.isalpha())
-            if (cleaned_pattern == cleaned_text) or (
-                re.fullmatch(pattern, original_text)
-            ):
-                match_score = 1
-                break
-            elif pattern in original_text:
-                match_score = 0.65
-            else:
-                pass
-        except Exception as e:
-            logger.exception(f"Column Name matching failed due to: {e}")
-    return match_score
-
-
-def match_datatype(dtype_to_match: str, dtype_list: List[str]) -> int:
-    """Match data type"""
-    dtype_list = [str(s).lower() for s in dtype_list]
-    dtype_to_match = dtype_to_match.lower()
-    if dtype_to_match in dtype_list:
-        match_score = 1
-    else:
-        match_score = 0
-    return match_score
-
-
-def match_regex_for_values(values: List[Any], regex_list: List[str]) -> float:
-    """Match regex for values"""
-    values_score_list = []
-    length_values = len(values)
-    values = [str(x).lower() for x in values]
-    for pattern in regex_list:
-        try:
-            r = re.compile(pattern)
-            matches = list(filter(r.fullmatch, values))
-            values = [val for val in values if val not in matches]
-            values_score_list.append(len(matches))
-            if len(values) == 0:
-                break
-        except Exception as e:
-            logger.exception(f"Regex match for values failed due to: {e}")
-    values_score = sum(values_score_list) / length_values
-    return values_score
-
-
-def detect_named_entity_spacy(
-    spacy_models_list: List, entities_of_interest: List[str], value: str
-) -> bool:
-    for spacy_model in spacy_models_list:
-        doc = spacy_model(value)
-        for ent in doc.ents:
-            if ent.label_ in entities_of_interest:
-                return True
-    return False
-
-
-def perform_basic_checks(
-    metadata: ColumnMetadata,
-    values: List[Any],
-    config_dict: Dict[str, Dict],
-    infotype: Optional[str] = None,
-) -> bool:
-    basic_checks_status = True
-    minimum_values_threshold = 50
-    if (
-        config_dict[PREDICTION_FACTORS_AND_WEIGHTS].get(VALUES, None)
-        and len(values) < minimum_values_threshold
-    ):
-        return False
-    return basic_checks_status
 
 
 def cosine_similarity_score(vec1: np.ndarray, vec2: np.ndarray) -> Optional[float]:

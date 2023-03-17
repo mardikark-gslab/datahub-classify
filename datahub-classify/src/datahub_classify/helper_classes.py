@@ -11,34 +11,6 @@ class ScoreInfo:
     weighted_score: Optional[float] = field(default=None)
 
 
-class DebugInfo(BaseModel):
-    name: Optional[float] = Field(
-        default=None, description="confidence score using name"
-    )
-    description: Optional[float] = Field(
-        default=None, description="confidence score using description"
-    )
-    datatype: Optional[float] = Field(
-        default=None,
-        description="confidence score using datatype. For tables, it is None",
-    )
-    values: Optional[float] = Field(
-        default=None,
-        description="confidence score using values. For tables, it is None",
-    )
-    platform: Optional[float] = Field(
-        default=None,
-        description="confidence score using platform. For columns, it is None",
-    )
-    table_schema: Optional[float] = Field(
-        default=None,
-        description="For tables, it is confidence score using table schema. For columns, it is table_similarity_score",
-    )
-    lineage: Optional[float] = Field(
-        default=None, description="confidence score using lineage"
-    )
-
-
 class SimilarityFactorScoreInfo(BaseModel):
     name: Optional[ScoreInfo] = Field(
         default=None,
@@ -71,13 +43,6 @@ class SimilarityFactorScoreInfo(BaseModel):
 
 
 @dataclass
-class InfotypeProposal:
-    infotype: str
-    confidence_level: float
-    debug_info: DebugInfo
-
-
-@dataclass
 class TextEmbeddings:
     emb_type: str
     embedding: numpy.ndarray
@@ -98,7 +63,6 @@ class ColumnMetadata:
 class ColumnInfo:
     metadata: ColumnMetadata
     values: List[Any] = field(default_factory=list)
-    infotype_proposals: Optional[List[InfotypeProposal]] = None
     parent_columns: List[str] = field(default_factory=list)
 
 
