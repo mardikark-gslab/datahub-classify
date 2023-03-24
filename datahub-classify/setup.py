@@ -14,12 +14,6 @@ def get_long_description():
 
 
 base_requirements = {
-    "vininfo>=1.7.0",
-    "schwifty>=2022.9.0",
-    "python-stdnum>=1.17",
-    "ipaddress>=1.0.23",
-    "spacy>=3.4.1,<=3.4.3",
-    "phonenumbers>=8.12.56,<=8.13.0",
     "python-Levenshtein>=0.20.8",
     "nltk>=3.7",
     "thefuzz>=0.19.0",
@@ -44,7 +38,6 @@ dev_requirements = {
     "pytest-cov>=2.8.1",
     "scikit-learn",
     "pandas>=1.2.0,<=1.5.1",
-    "openpyxl"
 }
 
 semantic_similarity_requirements = {
