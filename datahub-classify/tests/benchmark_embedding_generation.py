@@ -51,6 +51,7 @@ with open("Embedding_Generation_Timings.txt", "a") as f:
     f.write(
         f"Embedding Generation Time for {len(table_infos)} tables is - {embedding_generation_end_time - embedding_generation_start_time} sec\n\n"
     )
+print("Written results to Embedding_Generation_Timings.txt")
 print(
     f"Embedding Generation Time for {len(table_infos)} tables is - {embedding_generation_end_time - embedding_generation_start_time} sec\n\n"
 )

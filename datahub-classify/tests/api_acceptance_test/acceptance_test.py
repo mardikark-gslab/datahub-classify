@@ -3,6 +3,7 @@ import itertools
 import logging
 import os
 from typing import Dict, List, Tuple
+
 import pandas as pd
 
 from datahub_classify.helper_classes import (
@@ -120,7 +121,9 @@ def get_similarity_predictions(
                 non_pruning_table_keys.append(tables[1])
 
         non_pruning_table_keys = sorted(non_pruning_table_keys)
-        non_pruning_table_infos_list = [table_infos_[key] for key in non_pruning_table_keys]
+        non_pruning_table_infos_list = [
+            table_infos_[key] for key in non_pruning_table_keys
+        ]
 
         non_pruning_table_infos_list = preprocess_tables(non_pruning_table_infos_list)
 
@@ -150,11 +153,13 @@ def get_similarity_predictions(
         for key, value in non_pruning_mode_results[data_pair][1].items():
             columns_predicted_scores_[key] = value.score
     with open(os.path.join(CURRENT_WDR, "acceptance_pruning_results.json"), "w") as f:
-        print(pruning_mode_results, file=f)
+        f.write(f"{pruning_mode_results}")
+    print("Written results to acceptance_pruning_results.json")
     with open(
         os.path.join(CURRENT_WDR, "acceptance_nonpruning_results.json"), "a"
     ) as f:
-        print(non_pruning_mode_results, file=f)
+        f.write(f"{non_pruning_mode_results}")
+    print("Written results to acceptance_nonpruning_results.json")
 
     return (
         pruning_mode_output_predicted_,

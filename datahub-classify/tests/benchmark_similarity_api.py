@@ -278,3 +278,4 @@ with open("Similarity_predictions_with_embeddings.txt", "a") as file_:
         f"False Negatives\n"
         f"{column_similarity_report[2]['fn']}\n\n"
     )
+print("Written results to Similarity_predictions_with_embeddings.txt")
