@@ -81,8 +81,7 @@ def get_table_infos_and_pairs() -> Tuple[Dict[str, TableInfo], List[Tuple[str, s
 
 def get_similarity_predictions(
     table_infos_: Dict[str, TableInfo], table_pairs_: List[Tuple[str, str]]
-) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, float]]:
-    columns_predicted_scores_: Dict[str, float] = dict()
+) -> None:
     pruning_mode_results: Dict[str, Tuple] = dict()
     non_pruning_mode_results: Dict[str, Tuple] = dict()
 
@@ -98,20 +97,15 @@ def get_similarity_predictions(
             pruning_mode=True,
             use_embeddings=False,
         )
-    pruning_mode_output_predicted_ = {
-        key: ("not_similar" if value[0].score < PRUNING_THRESHOLD else "similar")
-        for key, value in pruning_mode_results.items()
-    }
 
     non_pruning_mode_combinations = [
         key
-        for key, value in pruning_mode_output_predicted_.items()
-        if value == "similar"
+        for key, value in pruning_mode_results.items()
+        if value[0].score >= PRUNING_THRESHOLD
     ]
 
     non_pruning_table_infos = None
     non_pruning_table_keys = []
-    # non_pruning_table_infos_list = []
     if USE_EMBEDDINGS:
         for pair in non_pruning_mode_combinations:
             tables = pair.split("_SPLITTER_")
@@ -145,32 +139,17 @@ def get_similarity_predictions(
             use_embeddings=USE_EMBEDDINGS,
         )
 
-    non_pruning_mode_output_predicted_ = {
-        key: ("not_similar" if value[0].score < FINAL_THRESHOLD else "similar")
-        for key, value in non_pruning_mode_results.items()
-    }
-    for i, data_pair in enumerate(non_pruning_mode_results.keys()):
-        for key, value in non_pruning_mode_results[data_pair][1].items():
-            columns_predicted_scores_[key] = value.score
     with open(os.path.join(CURRENT_WDR, "acceptance_pruning_results.json"), "w") as f:
         f.write(f"{pruning_mode_results}")
     print("Written results to acceptance_pruning_results.json")
     with open(
-        os.path.join(CURRENT_WDR, "acceptance_nonpruning_results.json"), "a"
+        os.path.join(CURRENT_WDR, "acceptance_nonpruning_results.json"), "w"
     ) as f:
         f.write(f"{non_pruning_mode_results}")
     print("Written results to acceptance_nonpruning_results.json")
 
-    return (
-        pruning_mode_output_predicted_,
-        non_pruning_mode_output_predicted_,
-        columns_predicted_scores_,
-    )
+    return None
 
 
 table_infos, table_pairs = get_table_infos_and_pairs()
-(
-    pruning_mode_output_PREDICTED,
-    non_pruning_mode_output_PREDICTED,
-    columns_predicted_scores,
-) = get_similarity_predictions(table_infos_=table_infos, table_pairs_=table_pairs)
+get_similarity_predictions(table_infos_=table_infos, table_pairs_=table_pairs)
