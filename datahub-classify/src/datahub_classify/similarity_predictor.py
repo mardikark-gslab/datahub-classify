@@ -35,8 +35,8 @@ try:
     else:
         device = "cpu"
     model = SentenceTransformer("all-MiniLM-L6-v2", device=device)
-except Exception as e:
-    logger.warning(f"Failed to load sentence transformers due to {e}")
+except Exception as ex:
+    logger.warning(f"Failed to load sentence transformers due to {ex}")
     model = None
 
 
@@ -493,7 +493,7 @@ def check_similarity(
     table_info1: TableInfo,
     table_info2: TableInfo,
     pruning_mode: bool = False,
-    use_embeddings: bool = True,
+    use_embeddings: bool = False,
 ) -> tuple:
     logger.debug(
         f"** Finding table similarity between Table '{table_info1.metadata.table_id}' and '{table_info2.metadata.table_id}' **"
